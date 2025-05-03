@@ -2,35 +2,13 @@ from flask import Flask, render_template_string, request
 import sqlite3
 
 app = Flask(__name__)
-DB_NAME = "foodwise.db"
-
-# Минимальный список продуктов
-PRODUCTS = [
-    "яблоко",
-    "банан",
-    "хлеб",
-    "молоко",
-    "рис",
-    "курица"
-]
-
-# Создание таблицы, если не существует
-def init_db():
-    with sqlite3.connect(DB_NAME) as conn:
-        conn.execute('''CREATE TABLE IF NOT EXISTS meals (
-            id INTEGER PRIMARY KEY,
-            product TEXT NOT NULL,
-            grams INTEGER NOT NULL,
-            calories REAL NOT NULL,
-            date TEXT NOT NULL
-        )''')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
         # Пока обработка данных формы отсутствует
         pass
-    return render_template_string(TEMPLATE, products=PRODUCTS)
+    return render_template_string(TEMPLATE)
 
 TEMPLATE = """
 <!doctype html>
@@ -71,5 +49,4 @@ TEMPLATE = """
 """
 
 if __name__ == '__main__':
-    init_db()
     app.run(debug=True)
