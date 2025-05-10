@@ -81,7 +81,16 @@ TEMPLATE = """
     <title>FoodWise</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-light">
+<body class="bg-light" style="min-height: 100vh;">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="/">FoodWise</a>
+    <div>
+      <a class="btn btn-outline-light me-2" href="/">Главная</a>
+      <a class="btn btn-outline-light" href="/history">История</a>
+    </div>
+  </div>
+</nav>
 <div class="container mt-5">
     <h1 class="mb-4">FoodWise — Помощник по питанию</h1>
     <a href="/history" class="btn btn-outline-primary mb-3">📜 Перейти к истории</a>
