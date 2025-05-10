@@ -102,11 +102,22 @@ TEMPLATE = """
         {% endfor %}
     </ul>
 
-    <div class="alert alert-info">
-        <strong>Итого:</strong> {{ total|round(1) }} ккал<br>
-        <em>{{ tip }}</em>
-    </div>
-</div>
+    {% if total < 1200 %}
+        <div class="alert alert-warning">
+            <strong>Итого:</strong> {{ total|round(1) }} ккал<br>
+            🥦 Вы съели слишком мало. Добавьте белки или сложные углеводы.
+        </div>
+    {% elif total > 2500 %}
+        <div class="alert alert-danger">
+            <strong>Итого:</strong> {{ total|round(1) }} ккал<br>
+            🍕 Переизбыток калорий. Проверьте перекусы и напитки.
+        </div>
+    {% else %}
+        <div class="alert alert-success">
+            <strong>Итого:</strong> {{ total|round(1) }} ккал<br>
+            ✅ Отличный баланс! Так держать!
+        </div>
+    {% endif %}
 </body>
 </html>
 """
