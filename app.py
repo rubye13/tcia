@@ -84,6 +84,7 @@ TEMPLATE = """
 <body class="bg-light">
 <div class="container mt-5">
     <h1 class="mb-4">FoodWise — Помощник по питанию</h1>
+    <a href="/history" class="btn btn-outline-primary mb-3">📜 Перейти к истории</a>
 
     <form method="post" class="mb-4">
         <div class="row g-2">
