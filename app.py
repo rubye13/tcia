@@ -38,8 +38,11 @@ def get_today_meals():
         cursor = conn.execute('SELECT product, grams, calories FROM meals WHERE date = ?', (str(date.today()),))
         return cursor.fetchall()
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    message = None
+
     if request.method == 'POST':
         product = request.form['product'].lower()
         grams = int(request.form['grams'])
@@ -48,8 +51,9 @@ def index():
             cal_per_100g = PRODUCTS[product]
             calories = grams * cal_per_100g / 100
             add_meal(product, grams, calories)
+            message = f"✅ Запись добавлена: {product.capitalize()} — {grams} г"
 
-        return redirect('/')
+        return redirect('/?added=1')
 
     meals = get_today_meals()
     total_calories = sum(row[2] for row in meals)
@@ -61,7 +65,20 @@ def index():
     else:
         tip = "Отличный баланс калорий!"
 
-    return render_template_string(TEMPLATE, products=PRODUCTS.keys(), meals=meals, total=total_calories, tip=tip)
+    # Обработка query-параметра
+    added = request.args.get("added")
+    if added:
+        message = "✅ Запись успешно добавлена!"
+
+    return render_template_string(
+        TEMPLATE,
+        products=PRODUCTS.keys(),
+        meals=meals,
+        total=total_calories,
+        tip=tip,
+        message=message
+    )
+
 
 # Отображение истории приемов пищи
 @app.route('/history')
@@ -93,19 +110,23 @@ TEMPLATE = """
 </nav>
 <div class="container mt-5">
     <h1 class="mb-4">FoodWise — Помощник по питанию</h1>
+    {% if message %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
     <a href="/history" class="btn btn-outline-primary mb-3">📜 Перейти к истории</a>
 
     <form method="post" class="mb-4">
         <div class="row g-2">
             <div class="col-md-4">
                 <select class="form-select" name="product" required>
+                    <option value="" disabled selected>Выберите продукт...</option>
                     {% for name in products %}
                         <option value="{{ name }}">{{ name.capitalize() }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div class="col-md-4">
-                <input type="number" name="grams" class="form-control" placeholder="Граммы" min="1" required>
+                <input type="number" name="grams" class="form-control" placeholder="Граммы" min="1" required autofocus>
             </div>
             <div class="col-md-4">
                 <button class="btn btn-success w-100">Добавить</button>
