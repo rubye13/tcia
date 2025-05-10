@@ -63,6 +63,16 @@ def index():
 
     return render_template_string(TEMPLATE, products=PRODUCTS.keys(), meals=meals, total=total_calories, tip=tip)
 
+# Отображение истории приемов пищи
+@app.route('/history')
+def history():
+    with sqlite3.connect(DB_NAME) as conn:
+        cursor = conn.execute('SELECT date, product, grams, calories FROM meals ORDER BY date DESC')
+        rows = cursor.fetchall()
+
+    return render_template_string(HISTORY_TEMPLATE, meals=rows)
+
+
 TEMPLATE = """
 <!doctype html>
 <html lang="ru">
@@ -74,6 +84,7 @@ TEMPLATE = """
 <body class="bg-light">
 <div class="container mt-5">
     <h1 class="mb-4">FoodWise — Помощник по питанию</h1>
+    <a href="/history" class="btn btn-outline-primary mb-3">📜 Перейти к истории</a>
 
     <form method="post" class="mb-4">
         <div class="row g-2">
@@ -106,6 +117,36 @@ TEMPLATE = """
         <strong>Итого:</strong> {{ total|round(1) }} ккал<br>
         <em>{{ tip }}</em>
     </div>
+</div>
+</body>
+</html>
+"""
+
+HISTORY_TEMPLATE = """
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8">
+    <title>История питания</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <h1 class="mb-4">История приёмов пищи</h1>
+
+    <a href="/" class="btn btn-secondary mb-3">← Назад</a>
+
+    {% if meals %}
+        <ul class="list-group">
+        {% for date, product, grams, calories in meals %}
+            <li class="list-group-item">
+                <strong>{{ date }}</strong>: {{ product.capitalize() }}, {{ grams }} г — {{ calories|round(1) }} ккал
+            </li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <div class="alert alert-info">История пуста.</div>
+    {% endif %}
 </div>
 </body>
 </html>
